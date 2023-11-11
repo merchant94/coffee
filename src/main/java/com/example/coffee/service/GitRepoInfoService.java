@@ -1,5 +1,6 @@
 package com.example.coffee.service;
 
+import com.example.coffee.dto.response.repository.RepositoryInfoDto;
 import com.example.coffee.exception.CustomException;
 import com.example.coffee.exception.NotFoundException;
 import com.example.coffee.model.GitHubReleaseInfo;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -26,51 +28,70 @@ public class GitRepoInfoService {
         this.gitRepoInfoRepository = gitRepoInfoRepository;
         this.gitHubService = gitHubService;
     }
-
-
+    
     public List<GitRepoInfo> getAllGitRepositories() {
+
+        // TODO
+        // RepositoryInfoDto로 반환할 수 있도록 수정??
+
         return gitRepoInfoRepository.findAll();
     }
 
-    public void saveGitRepositoryInfo(GitRepoInfo gitRepoInfo) {
-        String owner = gitRepoInfo.getOwner();
-        String repository = gitRepoInfo.getRepository();
+    public RepositoryInfoDto saveGitRepositoryInfo(String owner, String repository, String description) {
 
-        // DB에 동일한 (owner, repository)가 존재하는지 확인
-        GitRepoInfo existingRepo = gitRepoInfoRepository.findByOwnerAndRepository(owner, repository);
-        if (existingRepo != null) {
-            throw new CustomException("Repository already exists: " + existingRepo);
+        // DB 동일 repo 확인
+        if (gitRepoInfoRepository.existsByOwnerAndRepository(owner, repository)) {
+            throw new CustomException("Repository already exists for owner: " + owner + ", repository: " + repository);
         }
 
         // Get release version from GitHub API
         Mono<GitHubReleaseInfo> releaseInfoMono = gitHubService.getTagName(owner, repository);
+        GitHubReleaseInfo releaseInfo = releaseInfoMono.blockOptional()
+                .orElseThrow(() -> new NotFoundException("Repository not found on GitHub"));
 
-        // 동기화 메서드 호출 사용하여 예외 처리
-        GitHubReleaseInfo releaseInfo = releaseInfoMono.block();
-        if (releaseInfo == null) {
-            throw new NotFoundException("Repository not found on GitHub");
+        GitRepoInfo savedRepo = gitRepoInfoRepository.save(
+                new GitRepoInfo(owner, repository, releaseInfo.getTagName(), description));
+
+
+        return toRepositoryInfoDto(savedRepo);
+    }
+
+    public boolean deleteGitRepositoryInfo(String owner, String repository) {
+        try {
+            // DB 동일 repo 확인
+            GitRepoInfo existingRepo = gitRepoInfoRepository.findByOwnerAndRepository(owner, repository);
+
+            if (existingRepo == null) {
+                throw new NotFoundException("Repository does not exist");
+            } else {
+                gitRepoInfoRepository.delete(existingRepo);
+                return true; // 삭제 성공 시 true 반환
+            }
+
+        } catch (EmptyResultDataAccessException ex) {
+            return false; // 예외 발생 시 false 반환
         }
-
-        // Set the version, description and save to the DB
-        gitRepoInfo.setVersion(releaseInfo.getTagName());
-        gitRepoInfoRepository.save(gitRepoInfo);
     }
 
-    public void deleteRepository(GitRepoInfo gitRepoInfo) {
-        
-    }
+    public RepositoryInfoDto updateGitRepositoryInfo(String owner, String repository, String description) {
 
-    public void update(GitRepoInfo gitRepoInfo) {
-        String owner = gitRepoInfo.getOwner();
-        String repository = gitRepoInfo.getRepository();
-
-        // DB에 동일한 (owner, repository)가 존재하는지 확인
         GitRepoInfo existingRepo = gitRepoInfoRepository.findByOwnerAndRepository(owner, repository);
-        if (existingRepo != null) {
-            existingRepo.setDescription(gitRepoInfo.getDescription());
-            gitRepoInfoRepository.save(existingRepo);
-        } else {
+
+        if (existingRepo == null) {
             throw new NotFoundException("Repository does not exist");
+        } else {
+            existingRepo.setDescription(description);
+            gitRepoInfoRepository.save(existingRepo);
+            return toRepositoryInfoDto(existingRepo);
         }
+    }
+
+    private RepositoryInfoDto toRepositoryInfoDto(GitRepoInfo gitRepoInfo) {
+        return RepositoryInfoDto.builder()
+                .owner(gitRepoInfo.getOwner())
+                .repository(gitRepoInfo.getRepository())
+                .version(gitRepoInfo.getVersion())
+                .description(gitRepoInfo.getDescription())
+                .build();
     }
 }
