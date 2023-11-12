@@ -2,8 +2,7 @@ package com.example.coffee.service;
 
 import com.example.coffee.exception.CustomException;
 import com.example.coffee.exception.NotFoundException;
-import com.example.coffee.model.GitHubReleaseInfo;
-import com.example.coffee.model.GitRepoInfo;
+import com.example.coffee.domain.GitHubReleaseInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;

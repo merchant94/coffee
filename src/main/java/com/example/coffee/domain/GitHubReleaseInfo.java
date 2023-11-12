@@ -1,4 +1,4 @@
-package com.example.coffee.model;
+package com.example.coffee.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
