@@ -39,6 +39,8 @@ public class GitInfoService {
         GitHubReleaseInfo releaseInfo = releaseInfoMono.blockOptional()
                 .orElseThrow(() -> new NotFoundException("Repository not found on GitHub"));
 
+        log.info("Add GitHub Info: owner={}, repository={}", owner, repository);
+
         return gitInfoRepository.save(
                 new GitInfo(owner, repository, releaseInfo.getTagName(), description));
     }
@@ -56,6 +58,7 @@ public class GitInfoService {
             if (existingRepo == null) {
                 throw new NotFoundException("Repository does not exist");
             } else {
+                log.info("Delete GitHub Info: owner={}, repository={}", deleteGitInfoRequest.getOwner(), deleteGitInfoRequest.getRepository());
                 gitInfoRepository.delete(existingRepo);
             }
         } catch (EmptyResultDataAccessException ex) {
@@ -72,6 +75,10 @@ public class GitInfoService {
             throw new NotFoundException("Repository does not exist");
         } else {
             existingRepo.setDescription(request.getDescription());
+            log.info("Update GitHub Info: owner={}, repository={}, description={}",
+                    existingRepo.getOwner(),
+                    existingRepo.getRepository(),
+                    existingRepo.getDescription());
             gitInfoRepository.save(existingRepo);
             return existingRepo;
         }

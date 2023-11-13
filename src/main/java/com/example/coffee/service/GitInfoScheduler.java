@@ -4,9 +4,7 @@ import com.example.coffee.domain.GitHubReleaseInfo;
 import com.example.coffee.domain.GitInfo;
 import com.example.coffee.exception.NotFoundException;
 import com.example.coffee.repository.GitInfoRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,28 +14,28 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 @EnableScheduling
 public class GitInfoScheduler {
 
-    @Autowired
-    private GitInfoService gitInfoService;
-    @Autowired
-    private TelegramBotService telegramBotService;
 
+    private final GitInfoService gitInfoService;
+    private final TelegramBotService telegramBotService;
     private final GitHubAPIService gitHubAPIService;
-
     private final GitInfoRepository gitInfoRepository;
-    private static final Logger logger = LoggerFactory.getLogger(GitInfoScheduler.class);
 
-    public GitInfoScheduler(GitHubAPIService gitHubAPIService, GitInfoRepository gitInfoRepository) {
+    public GitInfoScheduler(GitInfoService gitInfoService, TelegramBotService telegramBotService, GitHubAPIService gitHubAPIService, GitInfoRepository gitInfoRepository) {
+        this.gitInfoService = gitInfoService;
+        this.telegramBotService = telegramBotService;
         this.gitHubAPIService = gitHubAPIService;
         this.gitInfoRepository = gitInfoRepository;
     }
 
+
     @Scheduled(initialDelay = 60000, fixedRate = 1800000) // initialDelay: 1min, fixedRate: 30min
     public void fetchAndUpdateGitInfo() {
 
-        logger.info("Scheduled task(fetchAndUpdateGitInfo) executed at {}", LocalDateTime.now());
+        log.info("Scheduled task(fetchAndUpdateGitInfo) executed at {}", LocalDateTime.now());
 
         List<GitInfo> gitInfos = gitInfoService.findAll();
 

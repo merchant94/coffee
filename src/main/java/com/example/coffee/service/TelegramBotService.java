@@ -12,10 +12,12 @@ public class TelegramBotService {
     private String botToken;
     @Value("${telegram.chat.id}")
     private String chatId;
+    @Value("${telegram.api.url}")
+    private String telegramApiUrl;
 
     public void sendTelegramMessage(String message){
         // Send Telegram Alarm message
-        String apiUrl = String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", botToken, chatId, message);
+        String apiUrl = String.format(telegramApiUrl, botToken, chatId, message);
         RestTemplate restTemplate = new RestTemplate();
         String response = restTemplate.getForObject(apiUrl, String.class);
 

@@ -15,7 +15,6 @@ class CoffeeApplicationTests {
 
 	@Autowired
 	private GitInfoRepository gitInfoRepository;
-//	private static final Logger logger = (Logger) LoggerFactory.getLogger(CoffeeApplicationTests.class);
 
 	@Test
 	void testJpa() {
@@ -26,10 +25,6 @@ class CoffeeApplicationTests {
 	@Test
 	List<GitInfo> findAll(){
 		List<GitInfo> all = this.gitInfoRepository.findAll();
-//		logger.info("[findAll] {}");
-//		logger.info(all.toString());
-//		logger.info(String.valueOf(all));
-//		logger.info((Supplier<String>) all);
 		return all;
 	}
 
