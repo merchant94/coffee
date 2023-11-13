@@ -19,14 +19,14 @@ import java.util.List;
 public class GitInfoController {
     private final GitInfoService gitInfoService;
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<GitInfo> addGitInfo(@RequestBody AddGitInfoRequest request){
         GitInfo addedGitInfo = gitInfoService.addGitInfo(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(addedGitInfo);
     }
 
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity<List<GitInfoResponse>> findAll(){
         List<GitInfoResponse> gitInfos = gitInfoService.findAll()
                 .stream()
@@ -36,14 +36,14 @@ public class GitInfoController {
                 .body(gitInfos);
     }
 
-    @PutMapping("")
+    @PutMapping()
     public ResponseEntity<GitInfo> updateGitInfo(@RequestBody UpdateGitInfoRequest request){
         GitInfo updatedGitInfo =  gitInfoService.updateGitInfo(request);
         return ResponseEntity.ok()
                 .body(updatedGitInfo);
     }
 
-    @DeleteMapping("")
+    @DeleteMapping()
     public ResponseEntity<Boolean> deleteGitInfo(@RequestBody DeleteGitInfoRequest request){
         gitInfoService.deleteGitInfo(request);
         return ResponseEntity.ok()
