@@ -12,4 +12,7 @@ public class GitHubReleaseInfo {
     @JsonProperty("tag_name")
     private String tagName;
 
+    @JsonProperty("html_url")
+    private String htmlUrl;
+
 }

@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 public class GitInfoService {
     private final GitInfoRepository gitInfoRepository;
-    private final GitHubService gitHubService;
+    private final GitHubAPIService gitHubAPIService;
 
     public GitInfo addGitInfo(AddGitInfoRequest addGitInfoRequest){
 
@@ -35,7 +35,7 @@ public class GitInfoService {
         }
 
         // Get release version from GitHub API
-        Mono<GitHubReleaseInfo> releaseInfoMono = gitHubService.getTagName(owner, repository);
+        Mono<GitHubReleaseInfo> releaseInfoMono = gitHubAPIService.getReleaseInfo(owner, repository);
         GitHubReleaseInfo releaseInfo = releaseInfoMono.blockOptional()
                 .orElseThrow(() -> new NotFoundException("Repository not found on GitHub"));
 

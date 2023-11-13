@@ -9,14 +9,14 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 @Service
-public class GitHubService {
+public class GitHubAPIService {
     private final WebClient webClient;
 
-    public GitHubService(WebClient.Builder webClientBuilder) {
+    public GitHubAPIService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl("https://api.github.com").build();
     }
 
-    public Mono<GitHubReleaseInfo> getTagName(String owner, String repo){
+    public Mono<GitHubReleaseInfo> getReleaseInfo(String owner, String repo){
         return webClient
                 .get()
                 .uri("/repos/{owner}/{repo}/releases/latest",owner,repo)
@@ -30,5 +30,4 @@ public class GitHubService {
                     }
                 });
     }
-
 }
