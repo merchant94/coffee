@@ -1,7 +1,7 @@
 package com.example.coffee;
 
-import com.example.coffee.model.GitRepoInfo;
-import com.example.coffee.repository.GitRepoInfoRepository;
+import com.example.coffee.domain.GitInfo;
+import com.example.coffee.repository.GitInfoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import java.util.List;
 class CoffeeApplicationTests {
 
 	@Autowired
-	private GitRepoInfoRepository gitRepoInfoRepository;
+	private GitInfoRepository gitInfoRepository;
 //	private static final Logger logger = (Logger) LoggerFactory.getLogger(CoffeeApplicationTests.class);
 
 	@Test
@@ -24,8 +24,8 @@ class CoffeeApplicationTests {
 
 	}
 	@Test
-	List<GitRepoInfo> findAll(){
-		List<GitRepoInfo> all = this.gitRepoInfoRepository.findAll();
+	List<GitInfo> findAll(){
+		List<GitInfo> all = this.gitInfoRepository.findAll();
 //		logger.info("[findAll] {}");
 //		logger.info(all.toString());
 //		logger.info(String.valueOf(all));

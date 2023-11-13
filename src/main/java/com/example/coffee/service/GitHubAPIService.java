@@ -2,22 +2,21 @@ package com.example.coffee.service;
 
 import com.example.coffee.exception.CustomException;
 import com.example.coffee.exception.NotFoundException;
-import com.example.coffee.model.GitHubReleaseInfo;
-import com.example.coffee.model.GitRepoInfo;
+import com.example.coffee.domain.GitHubReleaseInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 @Service
-public class GitHubService {
+public class GitHubAPIService {
     private final WebClient webClient;
 
-    public GitHubService(WebClient.Builder webClientBuilder) {
+    public GitHubAPIService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl("https://api.github.com").build();
     }
 
-    public Mono<GitHubReleaseInfo> getTagName(String owner, String repo){
+    public Mono<GitHubReleaseInfo> getReleaseInfo(String owner, String repo){
         return webClient
                 .get()
                 .uri("/repos/{owner}/{repo}/releases/latest",owner,repo)
@@ -31,5 +30,4 @@ public class GitHubService {
                     }
                 });
     }
-
 }

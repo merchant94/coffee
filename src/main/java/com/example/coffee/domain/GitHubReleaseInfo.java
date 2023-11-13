@@ -1,4 +1,4 @@
-package com.example.coffee.model;
+package com.example.coffee.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -11,5 +11,8 @@ public class GitHubReleaseInfo {
 
     @JsonProperty("tag_name")
     private String tagName;
+
+    @JsonProperty("html_url")
+    private String htmlUrl;
 
 }
