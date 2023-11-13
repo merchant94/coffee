@@ -32,7 +32,7 @@ public class GitInfoScheduler {
         this.gitInfoRepository = gitInfoRepository;
     }
 
-    @Scheduled(cron = "0 0 * * * *") // 매 시간 0분에 실행
+    @Scheduled(initialDelay = 60000, fixedRate = 1800000) // initialDelay: 1min, fixedRate: 30min
     public void fetchAndUpdateGitInfo() {
 
         logger.info("Scheduled task(fetchAndUpdateGitInfo) executed at {}", LocalDateTime.now());
